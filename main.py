@@ -15,6 +15,9 @@ async def root():
 
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
+    """
+    Receives a PDF and extracts text from all pages.
+    """
     if image_file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Invalid file type. Please upload a PDF.")
 
@@ -22,9 +25,12 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         file_bytes = await image_file.read()
         pdf_document = fitz.open(stream=file_bytes, filetype="pdf")
 
-        first_page = pdf_document[0]
-        text = first_page.get_text()
+        # ✅ Extract text from all pages
+        all_text = ""
+        for page in pdf_document:
+            all_text += page.get_text() + "\n"
 
-        return {"extracted_text": text}
+        return {"extracted_text": all_text}
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"PDF extraction error: {str(e)}")
