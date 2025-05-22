@@ -67,6 +67,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         if gemini_output.endswith("```"):
             gemini_output = gemini_output[:-len("```")].strip()
 
+
         # Try parsing JSON
         try:
             extracted_data = json.loads(gemini_output)
