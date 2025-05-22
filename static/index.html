@@ -17,16 +17,6 @@
         <!-- Status and results display areas -->
         <p id="status" class="loading"></p>
         <pre id="results"></pre>
-<div id="authorizeContainer" style="text-align: center; margin-top: 30px; display: none;">
-  <button 
-    onclick="alert('Authorization flow coming soon...')" 
-    style="padding: 15px 30px; font-size: 18px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;">
-    Authorize Payments
-  </button>
-</div>
-
-
-
     </div>
 
     <script>
@@ -70,21 +60,17 @@
                     body: formData,
                 });
 
-
-
                 const data = await response.json();
 
                 // Handle successful response
                 if (response.ok) {
                     statusDiv.textContent = 'Extraction successful!';
                     resultsDiv.textContent = JSON.stringify(data, null, 2);
-                    document.getElementById("authorizeContainer").style.display = "block";
                 } else {
                     // Handle API errors
                     statusDiv.classList.add('error');
                     statusDiv.textContent = `Error: ${data.message || 'Unknown error'}`;
                     resultsDiv.textContent = JSON.stringify(data, null, 2);
-                    document.getElementById("authorizeContainer").style.display = "block";
                 }
             } catch (error) {
                 // Handle network or other errors
