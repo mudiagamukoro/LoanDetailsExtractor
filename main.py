@@ -5,6 +5,7 @@ import fitz  # PyMuPDF
 
 app = FastAPI()
 
+
 # Serve static assets like index.html, style.css, etc.
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
