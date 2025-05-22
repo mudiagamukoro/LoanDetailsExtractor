@@ -1,19 +1,20 @@
-FROM python:3.9-slim-buster
+FROM python:3.10-slim
 
+# Install system dependencies
+RUN apt-get update && apt-get install -y libmupdf-dev
+
+# Set work directory
 WORKDIR /app
 
-# Install system dependencies required for Pillow
-RUN apt-get update && apt-get install -y \
-    libjpeg-dev \
-    zlib1g-dev \
-    libpng-dev \
-    && rm -rf /var/lib/apt/lists/*
-
+# Copy requirements and install dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy app source
 COPY . .
 
-EXPOSE 8080
+# Expose static files
+COPY ./static ./static
 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"] 
+# Start app
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8080"]
