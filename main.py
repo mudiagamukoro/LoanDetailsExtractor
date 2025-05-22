@@ -19,6 +19,8 @@ async def serve_index():
     return FileResponse("static/index.html")
 
 
+
+
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
     if image_file.content_type != "application/pdf":
