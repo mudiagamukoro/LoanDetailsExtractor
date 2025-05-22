@@ -36,14 +36,28 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         
         # Handle PDF files
         if image_file.content_type == "application/pdf":
-            # Convert first page of PDF to image
-            pdf_document = fitz.open(stream=file_bytes, filetype="pdf")
-            first_page = pdf_document[0]
-            pix = first_page.get_pixmap()
-            img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            try:
+                pdf_document = fitz.open(stream=file_bytes, filetype="pdf")
+                first_page = pdf_document[0]
+                pix = first_page.get_pixmap()
+                img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error processing PDF: {str(e)}"
+                )
         else:
             # Handle image files
-            img = Image.open(io.BytesIO(file_bytes))
+            try:
+                img = Image.open(io.BytesIO(file_bytes))
+                # Convert to RGB if necessary
+                if img.mode != 'RGB':
+                    img = img.convert('RGB')
+            except Exception as e:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Error processing image: {str(e)}"
+                )
 
         model = genai.GenerativeModel('gemini-pro-vision')
         #exETL
@@ -119,7 +133,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
     except Exception as e:
         print(f"An error occurred: {e}")
         raise HTTPException(
-            status_code=500, detail=f"Internal server error: {e}. Check server logs."
+            status_code=500, detail=f"Internal server error: {str(e)}"
         )
 
 # --- Static Files Serving ---
