@@ -14,6 +14,7 @@ async def root():
     """
     return {"message": "Loan Details Extractor API is running"}
 
+
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
     """
