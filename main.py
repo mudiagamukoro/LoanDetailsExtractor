@@ -3,7 +3,6 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles # Import StaticFiles
 import google.generativeai as genai
-from PIL import Image
 import io
 import json
 import fitz  # PyMuPDF for PDF handling
