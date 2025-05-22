@@ -8,6 +8,7 @@ import io
 import json
 import fitz  # PyMuPDF for PDF handling
 
+
 app = FastAPI()
 
 # Configure Gemini API
@@ -16,7 +17,7 @@ app = FastAPI()
 # For local testing, ensure 'gcloud auth application-default login' has been run,
 # or set GEMINI_API_KEY environment variable.
 genai.configure() # No explicit api_key needed here for Cloud Run with ADC
-
+#
 # --- API Endpoints ---
 
 # This endpoint is specific to the API functionality
