@@ -1,6 +1,8 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi.responses import JSONResponse
 import fitz  # PyMuPDF
 import io
+import json
 
 app = FastAPI()
 
@@ -16,10 +18,14 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         file_bytes = await image_file.read()
         pdf_document = fitz.open(stream=file_bytes, filetype="pdf")
 
-        first_page = pdf_document[0]
-        text = first_page.get_text()
+        # Extract text from all pages
+        full_text = ""
+        for page in pdf_document:
+            full_text += page.get_text()
 
-        return {"extracted_text": text}
+        # For now, just return the extracted text
+        # Later we can add text processing to extract specific fields
+        return JSONResponse(content={"extracted_text": full_text})
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"PDF extraction error: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
