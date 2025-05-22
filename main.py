@@ -35,10 +35,11 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
         full_text = "\n".join(page.get_text() for page in pdf_doc)
 
+
         prompt_text = """
         Analyze this document/text of a loan contract. Extract all loan details into a structured JSON format including a payment schedule.
         """
-        model = genai.GenerativeModel("gemini-pro")
+        model = genai.GenerativeModel("gemini-1.5-pro")
         response = model.generate_content([prompt_text, full_text])
         gemini_output = response.text.strip()
 
