@@ -63,6 +63,8 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
                             entry[field] = format_with_commas(entry[field])
 
 
+
+
             return JSONResponse(content=extracted_data)
 
         except json.JSONDecodeError:
