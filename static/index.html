@@ -4,31 +4,38 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Loan Contract Extractor</title>
-    <link rel="stylesheet" href="/static/style.css">
-
+    <link rel="stylesheet" href="/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Upload Loan Contract PDF</h1>
-        <p>Upload a loan contract document in PDF format to extract all the loan details, especially the payment schedule as well as everything else.</p>
-        <!-- File input that accepts only PDFs -->
-        <input type="file" id="pdfUpload" accept=".pdf">
+        <h1>Upload Loan Contract Image</h1>
+        <p>Upload a loan contract document in either image format (PNG, JPEG) or PDF format to extract all the loan details, especially the payment schedule as well as everything else.</p>
+        <!-- File input that accepts both images and PDFs -->
+        <input type="file" id="imageUpload" accept="image/*,.pdf">
         <button id="uploadButton">Extract Details</button>
 
-        
         <!-- Status and results display areas -->
         <p id="status" class="loading"></p>
         <pre id="results"></pre>
+<div id="authorizeContainer" style="text-align: center; margin-top: 30px; display: none;">
+  <button 
+    onclick="alert('Authorization flow coming soon...')" 
+    style="padding: 15px 30px; font-size: 18px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer;">
+    Authorize Payments
+  </button>
+</div>
+
     </div>
 
     <script>
         // API endpoint configuration
+        // The endpoint is relative to the root path of the application
         const API_URL = '/api/extract-loan-details/';
 
         // Add click event listener to the upload button
         document.getElementById('uploadButton').addEventListener('click', async () => {
             // Get references to DOM elements
-            const fileInput = document.getElementById('pdfUpload');
+            const fileInput = document.getElementById('imageUpload');
             const statusDiv = document.getElementById('status');
             const resultsDiv = document.getElementById('results');
             const uploadButton = document.getElementById('uploadButton');
@@ -39,18 +46,12 @@
 
             // Validate file selection
             if (fileInput.files.length === 0) {
-                statusDiv.textContent = 'Please select a PDF file.';
-                return;
-            }
-
-            // Validate file type
-            const file = fileInput.files[0];
-            if (file.type !== 'application/pdf') {
-                statusDiv.textContent = 'Please select a valid PDF file.';
+                statusDiv.textContent = 'Please select an image file.';
                 return;
             }
 
             // Prepare form data for upload
+            const file = fileInput.files[0];
             const formData = new FormData();
             formData.append('image_file', file);
 
@@ -60,6 +61,8 @@
 
             try {
                 // Send POST request to the API
+                console.log('Sending request to API:', API_URL);  // Debug log
+                console.log('File type:', file.type);  // Log file type for debugging
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     body: formData,
@@ -71,15 +74,14 @@
                 if (response.ok) {
                     statusDiv.textContent = 'Extraction successful!';
                     resultsDiv.textContent = JSON.stringify(data, null, 2);
+                    document.getElementById("authorizeContainer").style.display = "block";
                 } else {
                     // Handle API errors
                     statusDiv.classList.add('error');
-                    statusDiv.textContent = `Error: ${data.detail || 'Unknown error'}`;
+                    statusDiv.textContent = `Error: ${data.message || 'Unknown error'}`;
                     resultsDiv.textContent = JSON.stringify(data, null, 2);
+                    document.getElementById("authorizeContainer").style.display = "block";
                 }
-
-
-                
             } catch (error) {
                 // Handle network or other errors
                 statusDiv.classList.add('error');
@@ -88,7 +90,6 @@
                 // Re-enable the upload button
                 uploadButton.disabled = false;
             }
-
         });
     </script>
 </body>
