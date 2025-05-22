@@ -25,10 +25,14 @@ def format_with_commas(value):
     except:
         return value
 
+
+
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
     if image_file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Please upload a PDF file.")
+
+
 
 
     try:
