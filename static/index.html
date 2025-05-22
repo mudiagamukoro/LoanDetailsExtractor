@@ -77,7 +77,7 @@
                     statusDiv.textContent = `Error: ${data.detail || 'Unknown error'}`;
                     resultsDiv.textContent = JSON.stringify(data, null, 2);
                 }
-                
+
             } catch (error) {
                 // Handle network or other errors
                 statusDiv.classList.add('error');
@@ -86,6 +86,7 @@
                 // Re-enable the upload button
                 uploadButton.disabled = false;
             }
+            
         });
     </script>
 </body>

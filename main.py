@@ -30,6 +30,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
     if image_file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Please upload a PDF file.")
 
+
     try:
         file_bytes = await image_file.read()
         pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
