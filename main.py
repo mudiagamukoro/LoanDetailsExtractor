@@ -6,7 +6,7 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 
-# Configure Gemini with your API key from env var
+# Configure Gemini API
 genai.configure(api_key=os.environ["GOOGLE_API_KEY"])
 
 app = FastAPI()
@@ -19,21 +19,18 @@ async def serve_index():
     return FileResponse("static/index.html")
 
 
-
-
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
     if image_file.content_type != "application/pdf":
         raise HTTPException(status_code=400, detail="Please upload a PDF file.")
 
     try:
-        # Extract text from all PDF pages
+        # Extract text from all pages
         file_bytes = await image_file.read()
         pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
         full_text = "\n".join(page.get_text() for page in pdf_doc)
 
-        # Prepare Gemini prompt
-        model = genai.GenerativeModel("gemini-1.5-pro")
+        # Gemini prompt with 'Due Date' and formatting guidance
         prompt_text = """
         Analyze this document/text of a loan contract. If it's a multi-page document or long text, look for all relevant information across all pages/sections. If a piece of information, like payment schedule rows, is found across multiple pages/sections, combine them. If the loan terms or parties are identical across pages/sections, provide them only once.
 
@@ -46,40 +43,14 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         6.  **Agreement Date** (string, e.g., "24th of April, 2024")
 
         7.  **Payment Schedule:** This is a table. Extract all entries into a JSON array of objects.
-            Each object should have these keys: "Tenor", "Principal", "Principal Repayment", "Interest Repayment", "Monthly Repayment".
-            Parse all numeric values as floats. Use null if a value is missing.
+            Each object should have the following exact keys:
+              - "Due Date"
+              - "Principal"
+              - "Principal Repayment"
+              - "Interest Repayment"
+              - "Monthly Repayment"
 
-        Format the response as a single JSON object. Example:
-        {
-          "lender_name": "...",
-          "borrower_name": "...",
-          "loan_amount": ...,
-          "interest_rate": ...,
-          "loan_term": "...",
-          "agreement_date": "...",
-          "payment_schedule": [ { ... }, { ... } ]
-        }
+            Format all numeric values with commas and two decimal places (e.g., 1,500,000.00).
+
+        Format your entire response as a single JSON object. If a field is missing, use null.
         """
-
-        response = model.generate_content([prompt_text, full_text])
-        gemini_output = response.text.strip()
-
-        # Clean JSON formatting
-        if gemini_output.startswith("```json"):
-            gemini_output = gemini_output[len("```json"):].strip()
-        if gemini_output.endswith("```"):
-            gemini_output = gemini_output[:-len("```")].strip()
-
-
-        # Try parsing JSON
-        try:
-            extracted_data = json.loads(gemini_output)
-            return JSONResponse(content=extracted_data)
-        except json.JSONDecodeError:
-            return JSONResponse(status_code=500, content={
-                "message": "Gemini's response was not valid JSON",
-                "raw_gemini_output": gemini_output
-            })
-
-    except Exception as e:
-        return JSONResponse(status_code=500, content={"message": f"Internal server error: {str(e)}"})
