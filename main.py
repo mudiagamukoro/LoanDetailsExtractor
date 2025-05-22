@@ -7,13 +7,16 @@ import json
 
 app = FastAPI()
 
+# Mount static files FIRST
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Then define API routes
 @app.get("/")
 async def root():
     """
     Root endpoint that serves the main page.
     """
     return {"message": "Loan Details Extractor API is running"}
-
 
 @app.post("/api/extract-loan-details/")
 async def extract_loan_details(image_file: UploadFile = File(...)):
@@ -38,6 +41,3 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing PDF: {str(e)}")
-
-# Mount static files
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
