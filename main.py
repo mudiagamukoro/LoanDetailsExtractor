@@ -28,7 +28,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
     """
     if not (image_file.content_type.startswith("image/") or image_file.content_type == "application/pdf"):
         raise HTTPException(
-            status_code=400, detail="Invalid file type. Please upload an image or PDF."
+            status_code=4014, detail="Invalid file types. Please upload an image or PDF."
         )
 
     try:
