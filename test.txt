@@ -1,0 +1,7 @@
+This is a test file created at: 2024-03-19
+To verify that the repository is working correctly.
+
+The Loan Contract Extractor application is now properly set up in this repository.
+You can find the main application files in the root directory and the static files in the static/ directory.
+
+PDF support has been added to the application! 
