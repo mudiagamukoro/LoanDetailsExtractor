@@ -41,6 +41,8 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         full_text = "\n".join(page.get_text() for page in pdf_doc)
 
 
+
+
         prompt_text = """
         Analyze this document/text of a loan contract. Extract all loan details into a structured JSON format including a payment schedule.
         """
