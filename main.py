@@ -30,7 +30,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
         full_text = "\n".join(page.get_text() for page in pdf_doc)
 
         # Prepare Gemini prompt
-        model = genai.GenerativeModel("gemini-pro")
+        model = genai.GenerativeModel("gemini-1.5-pro")
         prompt_text = """
         Analyze this document/text of a loan contract. If it's a multi-page document or long text, look for all relevant information across all pages/sections. If a piece of information, like payment schedule rows, is found across multiple pages/sections, combine them. If the loan terms or parties are identical across pages/sections, provide them only once.
 
