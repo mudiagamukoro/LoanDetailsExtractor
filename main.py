@@ -39,6 +39,10 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
 
 
 
+
+
+
+
     try:
         file_bytes = await image_file.read()
         pdf_doc = fitz.open(stream=file_bytes, filetype="pdf")
