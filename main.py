@@ -46,6 +46,7 @@ async def extract_loan_details(image_file: UploadFile = File(...)):
             img = Image.open(io.BytesIO(file_bytes))
 
         model = genai.GenerativeModel('gemini-pro-vision')
+        #exETL
 
         # --- CRITICAL: The Prompt ---
         # This prompt is designed to instruct Gemini to extract specific data
